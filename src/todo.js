@@ -31,27 +31,42 @@ export default class Todo extends React.Component {
         });
     };
 
+
     //handlePressEnter = (e,r) => {};
     // e is the event
+
     handlePressEnter = e => {
-        // Create a todo object containing its index and content
-        // todo = json object (javascript)
+        // Create a todo object containing its index, content,
+        // as well as an empty date
         const todo = {
             index: this.state.todos.length,
-            content: e.target.value
+            content: e.target.value,
+            date: null,
+            dateString: ""
         };
 
-        // Add the todo to our array
-        // todos = ["finish simplex", "new todo"]
+        // Add the new todo to our array
         const newTodos = this.state.todos.concat(todo);
+
+        this.setState({
+            todos: newTodos
+        });
+
         // Clear input
         e.target.value = "";
-        // setState pour changer l'etat
+    };
+    setDate = (index, date, dateString) => {
+        // Set the date of the given todo
+        let newTodos = [...this.state.todos];
+        newTodos[index].date = date;
+        newTodos[index].dateString = dateString;
+
+        // Initialize the state
         this.setState({
-            // pour sauvegarder todo dans la liste todos
             todos: newTodos
         });
     };
+
 
     // cont obj = {
     //     "firstname": "Ramzi",
@@ -77,6 +92,7 @@ export default class Todo extends React.Component {
                         <TodoItem
                             todo={item}
                             removeTodo={this.removeTodo}
+                            setDate={this.setDate}
                         />
                     )}
                 />
@@ -91,10 +107,20 @@ class TodoItem extends React.Component {
         this.props.removeTodo(this.props.todo.index);
     };
 
+    handleDateChange = (date, dateString) => {
+        // Update the date when changed
+        this.props.setDate(this.props.todo.index, date, dateString);
+    }
+
     render() {
         return (
             <List.Item
                 actions={[
+                    <DatePicker
+                        format="MM/DD/YYYY"
+                        onChange={this.handleDateChange}
+                        value={this.props.todo.date}
+                    />,
                     <Icon
                         type="close-circle"
                         theme="filled"
