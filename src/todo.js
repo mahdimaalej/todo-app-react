@@ -1,5 +1,5 @@
 import React from "react";
-import { Input, List, } from "antd";
+import { Input, List, Icon, DatePicker } from "antd";
 
 // Don't forget to include the CSS styles for antd!
 import "antd/dist/antd.css";
@@ -13,6 +13,23 @@ export default class Todo extends React.Component {
             todos: []
         };
     }
+
+    removeTodo = index => {
+        let newTodos = [...this.state.todos];
+
+        // Remove element
+        newTodos.splice(index, 1);
+
+        // Decrement greater indexes
+        for (let i = index; i < newTodos.length; i++) {
+            newTodos[i].index -= 1;
+        }
+
+        // Update state
+        this.setState({
+            todos: newTodos
+        });
+    };
 
     //handlePressEnter = (e,r) => {};
     // e is the event
@@ -57,10 +74,36 @@ export default class Todo extends React.Component {
                     locale={{ emptyText: "No todo items" }}
                     dataSource={this.state.todos}
                     renderItem={item => (
-                        <List.Item>{item.content}</List.Item>
+                        <TodoItem
+                            todo={item}
+                            removeTodo={this.removeTodo}
+                        />
                     )}
                 />
             </div>
+        );
+    }
+}
+
+class TodoItem extends React.Component {
+    remove = () => {
+        // Remove this TodoItem
+        this.props.removeTodo(this.props.todo.index);
+    };
+
+    render() {
+        return (
+            <List.Item
+                actions={[
+                    <Icon
+                        type="close-circle"
+                        theme="filled"
+                        onClick={this.remove}
+                    />
+                ]}
+            >
+                {this.props.todo.content}
+            </List.Item>
         );
     }
 }
